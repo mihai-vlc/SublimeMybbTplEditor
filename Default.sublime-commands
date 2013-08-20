@@ -1,0 +1,5 @@
+ [{
+  "id": "mybb_load",
+  "caption": "Mybb Tpl: Load templates",
+  "command": "mybb_tpl_load"
+}]
