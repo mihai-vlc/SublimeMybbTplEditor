@@ -5,8 +5,12 @@ The templates will be automatically updated in your database when you edit them.
 
 Installation
 -----------------
-Clone this project in your Packages folder.  
-`git clone https://github.com/ionutvmi/SublimeMybbTplEditor.git`
+**Via Package Control**  
+Search for `Mybb Template Editor`
+
+**Manually**  
+Clone this project in your Packages folder under the name `Mybb Template Editor`.  
+`git clone https://github.com/ionutvmi/SublimeMybbTplEditor.git "Mybb Template Editor"`
 
 How to use
 -----------------
