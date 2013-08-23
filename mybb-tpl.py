@@ -6,9 +6,9 @@
 import sublime, sublime_plugin, subprocess, os, sys
  
 class MybbTplLoadCommand(sublime_plugin.TextCommand):
-	settings = sublime.load_settings("mybb-tpl.sublime-settings")
 	 
 	def run(self, edit):
+		self.settings = sublime.load_settings("mybb-tpl.sublime-settings")
 		self.show_panel() # we prompt the user for tpl set
  
  
@@ -100,7 +100,7 @@ class MybbTplLoadCommand(sublime_plugin.TextCommand):
 				try:
 					subprocess.Popen(['sublime', '.'], cwd=path)
 				except:
-					subprocess.Popen(['/Applications/Sublime Text 3.app/Contents/SharedSupport/bin/subl', '.'], cwd=path)
+					subprocess.Popen(['/Applications/Sublime Text.app/Contents/SharedSupport/bin/subl', '.'], cwd=path)
 		elif sublime.platform() == 'windows':
 			# try:
 			# 	subprocess.Popen(['subl', '.'], cwd=path, shell=True)
@@ -120,8 +120,8 @@ class MybbTplLoadCommand(sublime_plugin.TextCommand):
 #check for updating the existing tpls and update them if they are edited
  
 class MybbTplUpdate(sublime_plugin.EventListener):
-	settings = sublime.load_settings("mybb-tpl.sublime-settings")
 	def on_post_save(self, view):
+		self.settings = sublime.load_settings("mybb-tpl.sublime-settings")
 		path = view.file_name()
 		fileName = os.path.basename(path)
 		ext = os.path.splitext(fileName)[1]
