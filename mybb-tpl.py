@@ -93,27 +93,7 @@ class MybbTplLoadCommand(sublime_plugin.TextCommand):
 		return stdout
  
 	def openInNewWindow(self, path):
-		if sublime.platform() == 'osx':
-			try:
-				subprocess.Popen(['subl', '.'], cwd=path)
-			except:
-				try:
-					subprocess.Popen(['sublime', '.'], cwd=path)
-				except:
-					subprocess.Popen(['/Applications/Sublime Text.app/Contents/SharedSupport/bin/subl', '.'], cwd=path)
-		elif sublime.platform() == 'windows':
-			# try:
-			# 	subprocess.Popen(['subl', '.'], cwd=path, shell=True)
-			# except:
-			# 	try:
-			# 		subprocess.Popen(['sublime', '.'], cwd=path, shell=True)
-			# 	except:
-			subprocess.Popen(['/Program Files/Sublime Text 3/sublime_text.exe', '.'], cwd=path, shell=True)
-		else:
-			try:
-				subprocess.Popen(['subl', '.'], cwd=path)
-			except:
-				subprocess.Popen(['sublime', '.'], cwd=path)
+		subprocess.Popen([sublime.executable_path(), '.'], cwd=path, shell=True)
  
  
  
