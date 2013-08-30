@@ -76,7 +76,7 @@ class MybbTplLoadCommand(sublime_plugin.TextCommand):
 	def run_query(self, query):
 		if query is None:
 			return False
- 
+		self.settings = sublime.load_settings("mybb-tpl.sublime-settings")
 		mysql = self.settings.get('mysql_executable', 'mysql')
 		host = self.settings.get('host', "localhost")
 		dbname = self.settings.get('dbname')
