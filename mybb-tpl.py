@@ -126,6 +126,10 @@ class MybbTplUpdate(sublime_plugin.EventListener):
  
 		# we check if this template exists for the current set
 		check = m.run_query(m,"SELECT `tid` FROM `"+prefix+"templates` WHERE `title` = '"+name+"' AND `sid` = '"+sid+"'")
+
+		if self.settings.get('passwd') != '':
+			check.pop(0) # remove the warning
+
 		if check == []:
 			result = m.run_query(m,"INSERT INTO `"+prefix+"templates` SET `title` = '"+name+"', `template`= '"+content+"', `sid` = '"+sid+"', `version`='"+ver+"'")
 		else:
