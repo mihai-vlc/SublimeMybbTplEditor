@@ -94,7 +94,7 @@ class MybbTplLoadCommand(sublime_plugin.TextCommand):
 
 		if self.settings.get('passwd') != '':
 			stdout.pop(0) # remove the warning
-			
+
 		return stdout
  
 	def openInNewWindow(self, path):
@@ -131,7 +131,7 @@ class MybbTplUpdate(sublime_plugin.EventListener):
 		else:
 			result = m.run_query(m,"UPDATE `"+prefix+"templates` SET `template`= '"+content+"' WHERE `title` = '"+name+"' AND `sid` = '"+sid+"'")
  
-		if check == []:
+		if result == []:
 			sublime.status_message("Template updated successfully !")
  
  
