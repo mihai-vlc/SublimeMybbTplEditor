@@ -55,9 +55,6 @@ class MybbTplLoadCommand(sublime_plugin.TextCommand):
 		prefix = self.settings.get('table_prefix')
 		titles = self.run_query("SELECT `title` FROM `"+prefix+"templatesets`")
 
-		if self.settings.get('passwd') != '':
-			titles.pop(0) # remove the warning
-			
 		titles.pop(0) # remove the first row
  
 		self.view.window().show_quick_panel(titles, self.setTplSet)
@@ -94,6 +91,10 @@ class MybbTplLoadCommand(sublime_plugin.TextCommand):
 		conarray = [x for x in conarray if x is not None]
 		process = subprocess.Popen(conarray, shell=False, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
 		stdout = [x.decode('unicode_escape').rstrip() for x in process.stdout.readlines()]
+
+		if self.settings.get('passwd') != '':
+			stdout.pop(0) # remove the warning
+			
 		return stdout
  
 	def openInNewWindow(self, path):
