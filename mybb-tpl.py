@@ -54,7 +54,11 @@ class MybbTplLoadCommand(sublime_plugin.TextCommand):
 	def show_panel(self):
 		prefix = self.settings.get('table_prefix')
 		titles = self.run_query("SELECT `title` FROM `"+prefix+"templatesets`")
-		titles.pop(0)
+
+		if self.settings.get('passwd') != '':
+			titles.pop(0) # remove the warning
+			
+		titles.pop(0) # remove the first row
  
 		self.view.window().show_quick_panel(titles, self.setTplSet)
  
