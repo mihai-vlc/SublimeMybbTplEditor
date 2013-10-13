@@ -92,8 +92,10 @@ class MybbTplLoadCommand(sublime_plugin.TextCommand):
 		process = subprocess.Popen(conarray, shell=False, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
 		stdout = [x.decode('unicode_escape').rstrip() for x in process.stdout.readlines()]
 
-		if self.settings.get('passwd') != '':
+		if self.settings.get('passwd') != '' and stdout != []:
 			stdout.pop(0) # remove the warning
+
+		print(stdout) #print for debugging
 
 		return stdout
  
