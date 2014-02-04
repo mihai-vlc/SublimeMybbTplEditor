@@ -18,6 +18,10 @@ Go to Preferences > Package Settings > MybbTpl and edit the settings to fit your
 Once that is done open the command pallete Ctrl+Shift+P and search for *Mybb Tpl: Load templates*.  
 Choose the desired template set and happy coding.
 
+If you want to edit CSS themes:
+Ctrl+Shift+P and select Mybb Tpl: Load themes (CSS)
+
+
 Contributions
 -----------------
 If you find a bug or have suggestions open an issue [here](https://github.com/ionutvmi/SublimeMybbTplEditor/issues)
