@@ -3,7 +3,7 @@
 # Aug 2013
 # Because sublime is awesome !!! 
  
-import sublime, sublime_plugin, subprocess, os, sys
+import sublime, sublime_plugin, subprocess, os, sys, time, urllib.request, urllib.parse
  
 class MybbTplLoadCommand(sublime_plugin.TextCommand):
 	 
@@ -105,6 +105,7 @@ class MybbTplLoadCommand(sublime_plugin.TextCommand):
 class MybbCssLoadCommand(sublime_plugin.TextCommand):
 	 
 	def run(self, edit):
+		self.m = MybbTplLoadCommand
 		self.settings = sublime.load_settings("mybb-tpl.sublime-settings")
 		self.show_panel() # we prompt the user for a css set
  
@@ -114,10 +115,10 @@ class MybbCssLoadCommand(sublime_plugin.TextCommand):
 		tid = self.settings.get('css_set')
  
 		# select all css names
-		files = self.run_query("SELECT `name` FROM `"+px+"themestylesheets` WHERE `tid`='"+ tid +"' ORDER BY name ASC")
+		files = self.m.run_query("SELECT `name` FROM `"+px+"themestylesheets` WHERE `tid`='"+ tid +"' ORDER BY name ASC")
 		files.pop(0)
 		# select all stylesheets
-		stylesheets = self.run_query("SELECT `stylesheet` FROM `"+px+"themestylesheets` WHERE `tid`='"+ tid +"' ORDER BY name ASC")
+		stylesheets = self.m.run_query("SELECT `stylesheet` FROM `"+px+"themestylesheets` WHERE `tid`='"+ tid +"' ORDER BY name ASC")
 		stylesheets.pop(0)
 		 
 		tmp = []
@@ -149,7 +150,7 @@ class MybbCssLoadCommand(sublime_plugin.TextCommand):
  
 	def show_panel(self):
 		prefix = self.settings.get('table_prefix')
-		names = self.run_query("SELECT `name` FROM `"+prefix+"themes`")
+		names = self.m.run_query("SELECT `name` FROM `"+prefix+"themes`")
 
 		names.pop(0) # remove the first row
  
@@ -161,39 +162,14 @@ class MybbCssLoadCommand(sublime_plugin.TextCommand):
  
 		prefix = self.settings.get('table_prefix')
 		 
-		cssSets = self.run_query("SELECT `tid` FROM `"+prefix+"themes`")
+		cssSets = self.m.run_query("SELECT `tid` FROM `"+prefix+"themes`")
 		cssSets.pop(0) # remove the first row
  
 		self.settings.set('css_set', cssSets[p])
-		sublime.save_settings("mybb-tpl.sublime-settings")      
+		sublime.save_settings("mybb-tpl.sublime-settings")
  
 		#grab the folder name
 		self.view.window().show_input_panel("Folder name:", "mybbCss", self.create_folder, None, None)
- 
-	def run_query(self, query):
-		if query is None:
-			return False
-		self.settings = sublime.load_settings("mybb-tpl.sublime-settings")
-		mysql = self.settings.get('mysql_executable', 'mysql')
-		host = self.settings.get('host', "localhost")
-		dbname = self.settings.get('dbname')
-		user = self.settings.get('user')
-		passwd = self.settings.get('passwd')
-		# if password is empty we don't include it
-		if passwd == '': 
-			conarray = [mysql, '-u', user, '-h', host, dbname, "-e %s" % query]
-		else:
-			conarray = [mysql, '-u', user, '-p%s' % passwd, '-h', host, dbname, "-e %s" % query]
-		conarray = [x for x in conarray if x is not None]
-		process = subprocess.Popen(conarray, shell=False, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-		stdout = [x.decode('unicode_escape').rstrip() for x in process.stdout.readlines()]
-
-		if self.settings.get('passwd') != '' and stdout != []:
-			stdout.pop(0) # remove the warning
-
-		print(stdout) #print for debugging
-
-		return stdout
  
 	def openInNewWindow(self, path):
 		subprocess.Popen([sublime.executable_path(), '.'], cwd=path, shell=True) 
@@ -237,26 +213,13 @@ class MybbTplUpdate(sublime_plugin.EventListener):
 
 	def updateCss(self, name, view):
 		tid = self.settings.get('css_set')
-		prefix = self.settings.get('table_prefix')
-		ver = self.settings.get('mybb_version')
-		m = MybbTplLoadCommand
- 
-		# get the content of this file
-		content = self.addslashes(view.substr(sublime.Region(0, view.size())))
- 
-		# we check if this template exists for the current set
-		#check = m.run_query(m,"SELECT `tid` FROM `"+prefix+"templates` WHERE `title` = '"+name+"' AND `sid` = '"+sid+"'")
-		#if check == []:
-		#	result = m.run_query(m,"INSERT INTO `"+prefix+"templates` SET `title` = '"+name+"', `template`= '"+content+"', `sid` = '"+sid+"', `version`='"+ver+"'")
-		#else:
-		# lazyness!
 
-		result = m.run_query(m,"UPDATE `"+prefix+"themestylesheets` SET `stylesheet`= '"+content+"' WHERE `name` = '"+name+"' AND `tid` = '"+tid+"'")
- 
-		if result == []:
-			sublime.status_message("Template updated successfully !")
- 
- 
+		content = view.substr(sublime.Region(0, view.size()))
+
+		postdata = urllib.parse.urlencode({"name" : name, "tid" : tid, "stylesheet" : content})
+
+		urllib.request.urlopen(self.settings.get('css_update_url'), postdata.encode('utf-8'))
+
 	def addslashes(self, s):
 		l = ["\\", '"', "'", "\0", ]
 		for i in l:
