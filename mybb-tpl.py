@@ -115,10 +115,10 @@ class MybbCssLoadCommand(sublime_plugin.TextCommand):
 		tid = self.settings.get('css_set')
  
 		# select all css names
-		files = self.m.run_query("SELECT `name` FROM `"+px+"themestylesheets` WHERE `tid`='"+ tid +"' ORDER BY name ASC")
+		files = self.m.run_query(self.m, "SELECT `name` FROM `"+px+"themestylesheets` WHERE `tid`='"+ tid +"' ORDER BY name ASC")
 		files.pop(0)
 		# select all stylesheets
-		stylesheets = self.m.run_query("SELECT `stylesheet` FROM `"+px+"themestylesheets` WHERE `tid`='"+ tid +"' ORDER BY name ASC")
+		stylesheets = self.m.run_query(self.m, "SELECT `stylesheet` FROM `"+px+"themestylesheets` WHERE `tid`='"+ tid +"' ORDER BY name ASC")
 		stylesheets.pop(0)
 		 
 		tmp = []
@@ -150,7 +150,7 @@ class MybbCssLoadCommand(sublime_plugin.TextCommand):
  
 	def show_panel(self):
 		prefix = self.settings.get('table_prefix')
-		names = self.m.run_query("SELECT `name` FROM `"+prefix+"themes`")
+		names = self.m.run_query(self.m, "SELECT `name` FROM `"+prefix+"themes`")
 
 		names.pop(0) # remove the first row
  
@@ -162,7 +162,7 @@ class MybbCssLoadCommand(sublime_plugin.TextCommand):
  
 		prefix = self.settings.get('table_prefix')
 		 
-		cssSets = self.m.run_query("SELECT `tid` FROM `"+prefix+"themes`")
+		cssSets = self.m.run_query(self.m, "SELECT `tid` FROM `"+prefix+"themes`")
 		cssSets.pop(0) # remove the first row
  
 		self.settings.set('css_set', cssSets[p])
