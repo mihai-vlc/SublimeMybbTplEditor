@@ -3,7 +3,7 @@
 # Aug 2013
 # Because sublime is awesome !!! 
  
-import sublime, sublime_plugin, subprocess, os, sys
+import sublime, sublime_plugin, subprocess, os, sys, time, urllib.request, urllib.parse
  
 class MybbTplLoadCommand(sublime_plugin.TextCommand):
 	 
@@ -101,7 +101,78 @@ class MybbTplLoadCommand(sublime_plugin.TextCommand):
  
 	def openInNewWindow(self, path):
 		subprocess.Popen([sublime.executable_path(), '.'], cwd=path, shell=True)
+
+class MybbCssLoadCommand(sublime_plugin.TextCommand):
+	 
+	def run(self, edit):
+		self.m = MybbTplLoadCommand
+		self.settings = sublime.load_settings("mybb-tpl.sublime-settings")
+		self.show_panel() # we prompt the user for a css set
  
+ 
+	def load_css(self, path):
+		px = self.settings.get('table_prefix')
+		tid = self.settings.get('css_set')
+ 
+		# select all css names
+		files = self.m.run_query(self.m, "SELECT `name` FROM `"+px+"themestylesheets` WHERE `tid`='"+ tid +"' ORDER BY name ASC")
+		files.pop(0)
+		# select all stylesheets
+		stylesheets = self.m.run_query(self.m, "SELECT `stylesheet` FROM `"+px+"themestylesheets` WHERE `tid`='"+ tid +"' ORDER BY name ASC")
+		stylesheets.pop(0)
+		 
+		tmp = []
+		# for each template we make a file and write the template text inside
+		for idx,val in enumerate(files):
+			if val not in tmp:
+				tmp.append(val)
+				f = open(path+"/"+val+".mybbcss", 'wb+')
+				f.write(bytes(stylesheets[idx], "UTF-8"))
+				f.close()
+ 
+		# clean some stuff
+		del files, stylesheets, tmp
+ 
+		self.openInNewWindow(path)
+		 
+ 
+	def create_folder(self, folder_name):
+		# we build the mybb-tpl folder
+		if sublime.platform() == "windows":
+			path = os.path.expanduser("~\\My Documents\\" + folder_name)
+		else:
+			path = os.path.expanduser("~/Documents/" + folder_name)     
+		 
+		if not os.path.exists(path):
+			os.makedirs(path)
+ 
+		self.load_css(path) # we download the csses from db
+ 
+	def show_panel(self):
+		prefix = self.settings.get('table_prefix')
+		names = self.m.run_query(self.m, "SELECT `name` FROM `"+prefix+"themes`")
+
+		names.pop(0) # remove the first row
+ 
+		self.view.window().show_quick_panel(names, self.setCssSet)
+ 
+	def setCssSet(self, p):
+		if p < 0:
+			return False;
+ 
+		prefix = self.settings.get('table_prefix')
+		 
+		cssSets = self.m.run_query(self.m, "SELECT `tid` FROM `"+prefix+"themes`")
+		cssSets.pop(0) # remove the first row
+ 
+		self.settings.set('css_set', cssSets[p])
+		sublime.save_settings("mybb-tpl.sublime-settings")
+ 
+		#grab the folder name
+		self.view.window().show_input_panel("Folder name:", "mybbCss", self.create_folder, None, None)
+ 
+	def openInNewWindow(self, path):
+		subprocess.Popen([sublime.executable_path(), '.'], cwd=path, shell=True) 
  
  
 #check for updating the existing tpls and update them if they are edited
@@ -115,6 +186,10 @@ class MybbTplUpdate(sublime_plugin.EventListener):
 		if(ext == '.mybbtpl'):
 			name = os.path.splitext(fileName)[0]
 			self.updateTpl(name, view)
+
+		if(ext == '.mybbcss'):
+			name = os.path.splitext(fileName)[0]
+			self.updateCss(name, view)
  
  
 	def updateTpl(self, name, view):
@@ -135,8 +210,16 @@ class MybbTplUpdate(sublime_plugin.EventListener):
  
 		if result == []:
 			sublime.status_message("Template updated successfully !")
- 
- 
+
+	def updateCss(self, name, view):
+		tid = self.settings.get('css_set')
+
+		content = view.substr(sublime.Region(0, view.size()))
+
+		postdata = urllib.parse.urlencode({"name" : name, "tid" : tid, "stylesheet" : content})
+
+		urllib.request.urlopen(self.settings.get('css_update_url'), postdata.encode('utf-8'))
+
 	def addslashes(self, s):
 		l = ["\\", '"', "'", "\0", ]
 		for i in l:

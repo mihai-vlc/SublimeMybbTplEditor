@@ -16,7 +16,11 @@ How to use
 -----------------
 Go to Preferences > Package Settings > MybbTpl and edit the settings to fit your system.  
 Once that is done open the command pallete Ctrl+Shift+P and search for *Mybb Tpl: Load templates*.  
-Choose the desired template set and happy coding.
+Choose the desired template set and happy coding. 
+
+If you want to edit CSS themes: 
+Ctrl+Shift+P and select Mybb Tpl: Load themes (CSS) 
+
 
 Contributions
 -----------------
