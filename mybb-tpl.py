@@ -107,14 +107,14 @@ class MybbTplLoadCommand(sublime_plugin.TextCommand):
         conarray = [x for x in conarray if x is not None]
         process = subprocess.Popen(conarray, shell=False, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
 
-        r = process.stdout.readlines()
+        lines = process.stdout.readlines()
 
-        stdout = [self.decode_escapes(x.decode(encoding).rstrip()) for x in r]
+        stdout = []
+
+        stdout = [self.decode_escapes(x.decode(encoding).rstrip()) for x in lines]
 
         if self.settings.get('passwd') != '' and stdout != []:
             stdout.pop(0) # remove the warning
-
-        print(r)
 
         return stdout
 
@@ -122,6 +122,9 @@ class MybbTplLoadCommand(sublime_plugin.TextCommand):
         subprocess.Popen([sublime.executable_path(), '.'], cwd=path, shell=False)
 
     def decode_escapes(self, s):
+        if s is None:
+            return False
+
         def decode_match(match):
             return codecs.decode(match.group(0), 'unicode-escape')
 
@@ -221,17 +224,17 @@ class MybbTplUpdate(sublime_plugin.EventListener):
         sid = self.settings.get('tpl_set')
         prefix = self.settings.get('table_prefix')
         ver = self.settings.get('mybb_version')
-        m = MybbTplLoadCommand
+        m = MybbTplLoadCommand(view)
 
         # get the content of this file
         content = self.addslashes(view.substr(sublime.Region(0, view.size())))
 
         # we check if this template exists for the current set
-        check = m.run_query(m,"SELECT `tid` FROM `"+prefix+"templates` WHERE `title` = '"+name+"' AND `sid` = '"+sid+"'")
+        check = m.run_query("SELECT `tid` FROM `"+prefix+"templates` WHERE `title` = '"+name+"' AND `sid` = '"+sid+"'")
         if check == []:
-            result = m.run_query(m,"INSERT INTO `"+prefix+"templates` SET `title` = '"+name+"', `template`= '"+content+"', `sid` = '"+sid+"', `version`='"+ver+"'")
+            result = m.run_query("INSERT INTO `"+prefix+"templates` SET `title` = '"+name+"', `template`= '"+content+"', `sid` = '"+sid+"', `version`='"+ver+"'")
         else:
-            result = m.run_query(m,"UPDATE `"+prefix+"templates` SET `template`= '"+content+"' WHERE `title` = '"+name+"' AND `sid` = '"+sid+"'")
+            result = m.run_query("UPDATE `"+prefix+"templates` SET `template`= '"+content+"' WHERE `title` = '"+name+"' AND `sid` = '"+sid+"'")
 
         if result == []:
             sublime.status_message("Template updated successfully !")
