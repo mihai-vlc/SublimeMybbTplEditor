@@ -4,6 +4,18 @@
 # Because sublime is awesome !!!
 
 import sublime, sublime_plugin, subprocess, os, sys, time, urllib.request, urllib.parse
+import re
+import codecs
+
+ESCAPE_SEQUENCE_RE = re.compile(r'''
+    ( \\U........      # 8-digit hex escapes
+    | \\u....          # 4-digit hex escapes
+    | \\x..            # 2-digit hex escapes
+    | \\[0-7]{1,3}     # Octal escapes
+    | \\N\{[^}]+\}     # Unicode characters by name
+    | \\[\\'"abfnrtv]  # Single-character escapes
+    )''', re.UNICODE | re.VERBOSE)
+
 
 
 class MybbTplLoadCommand(sublime_plugin.TextCommand):
@@ -95,7 +107,7 @@ class MybbTplLoadCommand(sublime_plugin.TextCommand):
 
         r = process.stdout.readlines()
 
-        stdout = [x.decode('unicode_escape').rstrip() for x in r]
+        stdout = [self.decode_escapes(x.decode('utf8').rstrip()) for x in r]
 
         if self.settings.get('passwd') != '' and stdout != []:
             stdout.pop(0) # remove the warning
@@ -106,6 +118,12 @@ class MybbTplLoadCommand(sublime_plugin.TextCommand):
 
     def openInNewWindow(self, path):
         subprocess.Popen([sublime.executable_path(), '.'], cwd=path, shell=True)
+
+    def decode_escapes(self, s):
+        def decode_match(match):
+            return codecs.decode(match.group(0), 'unicode-escape')
+
+        return ESCAPE_SEQUENCE_RE.sub(decode_match, s)
 
 class MybbCssLoadCommand(sublime_plugin.TextCommand):
 
