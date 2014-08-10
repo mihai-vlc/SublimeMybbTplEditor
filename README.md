@@ -1,4 +1,4 @@
-Sublime Mybb Template Editor (Beta)
+Sublime Mybb Template Editor
 =============================
 Sublime Mybb Template Editor will allow you to edit mybb templates directly from sublime text 3.  
 The templates will be automatically updated in your database when you edit them.  
