@@ -5,6 +5,7 @@
     "passwd": "",
     "dbname": "test_mybb",
 
+    "encoding": "utf8",
     "table_prefix" : "mybb_",
     "mysql_executable": "/wamp/bin/mysql/mysql5.6.12/bin/mysql.exe",
     "css_update_url" : "http://localhost/mybb/updatecss.php",

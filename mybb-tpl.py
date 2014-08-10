@@ -97,27 +97,29 @@ class MybbTplLoadCommand(sublime_plugin.TextCommand):
         dbname = self.settings.get('dbname')
         user = self.settings.get('user')
         passwd = self.settings.get('passwd')
+        encoding = self.settings.get('encoding', 'utf8')
+
         # if password is empty we don't include it
         if passwd == '':
-            conarray = [mysql, '--default-character-set=utf8', '-u', user, '-h', host, dbname, "-e %s" % query]
+            conarray = [mysql, '--default-character-set=' + encoding, '-u', user, '-h', host, dbname, "-e %s" % query]
         else:
-            conarray = [mysql, '--default-character-set=utf8', '-u', user, '-p%s' % passwd, '-h', host, dbname, "-e %s" % query]
+            conarray = [mysql, '--default-character-set=' + encoding, '-u', user, '-p%s' % passwd, '-h', host, dbname, "-e %s" % query]
         conarray = [x for x in conarray if x is not None]
         process = subprocess.Popen(conarray, shell=False, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
 
         r = process.stdout.readlines()
 
-        stdout = [self.decode_escapes(x.decode('utf8').rstrip()) for x in r]
+        stdout = [self.decode_escapes(x.decode(encoding).rstrip()) for x in r]
 
         if self.settings.get('passwd') != '' and stdout != []:
             stdout.pop(0) # remove the warning
 
-
+        print(r)
 
         return stdout
 
     def openInNewWindow(self, path):
-        subprocess.Popen([sublime.executable_path(), '.'], cwd=path, shell=True)
+        subprocess.Popen([sublime.executable_path(), '.'], cwd=path, shell=False)
 
     def decode_escapes(self, s):
         def decode_match(match):
