@@ -28,4 +28,4 @@ If you find a bug or have suggestions open an issue [here](https://github.com/io
 
 Donate 
 -----------------
-If you like my code you can support me by making a [donation](https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=T9HU2KAF54EBE&lc=RO&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donateCC_LG%2egif%3aNonHosted)
+If you like my code you can support me by making a [donation](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=5VVJJXVFMQ9ZN)
