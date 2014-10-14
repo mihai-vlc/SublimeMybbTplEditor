@@ -19,8 +19,9 @@ Once that is done open the command pallete Ctrl+Shift+P and search for *Mybb Tpl
 Choose the desired template set and happy coding. 
 
 If you want to edit CSS themes: 
-Ctrl+Shift+P and select Mybb Tpl: Load themes (CSS) 
-
+Ctrl+Shift+P and select Mybb Tpl: Load themes (CSS)   
+Download and install the [updatecss.php](https://github.com/ionutvmi/SublimeMybbTplEditor/blob/master/updatecss.php) file on your development server.   
+Set the correct url to the updatecss.php in the settings file.
 
 Contributions
 -----------------
