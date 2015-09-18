@@ -4,6 +4,7 @@
 # Because sublime is awesome !!!
 
 import sublime, sublime_plugin, subprocess, os, sys, time, urllib.request, urllib.parse
+from urllib.error import  URLError
 import re
 import codecs
 
@@ -84,7 +85,7 @@ class MybbTplLoadCommand(sublime_plugin.TextCommand):
 
         defaultPath = self.settings.get("default_path", "/mybbTemp") + "/mybbTpl";
         # grab the folder name
-        self.view.window().show_input_panel("Folder name:", defaultPath, self.create_folder, None, None)
+        self.view.window().show_input_panel("Folder full path:", defaultPath, self.create_folder, None, None)
 
     def run_query(self, query):
         if query is None:
@@ -141,10 +142,14 @@ class MybbCssLoadCommand(sublime_plugin.TextCommand):
         tid = self.settings.get('css_set')
 
         # select all css names
-        files = self.m.run_query("SELECT `name` FROM `"+px+"themestylesheets` WHERE `tid`='"+ tid +"' ORDER BY name ASC")
+        files = self.m.run_query("SELECT `name` FROM `" + px + "themestylesheets` WHERE `tid`='"+ tid +"' ORDER BY name ASC")
+        if not files:
+            print("Mybb Template Editor:ERROR: No css files found for the tid: " + tid)
+            return False
+
         files.pop(0)
         # select all stylesheets
-        stylesheets = self.m.run_query("SELECT `stylesheet` FROM `"+px+"themestylesheets` WHERE `tid`='"+ tid +"' ORDER BY name ASC")
+        stylesheets = self.m.run_query("SELECT `stylesheet` FROM `"+ px +"themestylesheets` WHERE `tid`='"+ tid +"' ORDER BY name ASC")
         stylesheets.pop(0)
 
         tmp = []
@@ -240,9 +245,14 @@ class MybbTplUpdate(sublime_plugin.EventListener):
 
         content = view.substr(sublime.Region(0, view.size()))
 
-        postdata = urllib.parse.urlencode({"name" : name, "tid" : tid, "stylesheet" : content})
+        try:
+            postdata = urllib.parse.urlencode({"name" : name, "tid" : tid, "stylesheet" : content})
+            with urllib.request.urlopen(self.settings.get('css_update_url'), postdata.encode('utf-8')) as response:
+                print("Mybb Template Editor: " + response.read().decode('utf-8'))
+                sublime.status_message("The css file was updated successfully !")
 
-        urllib.request.urlopen(self.settings.get('css_update_url'), postdata.encode('utf-8'))
+        except URLError as e:
+            print("Mybb Template Editor: " + e.reason);
 
     def addslashes(self, s):
         l = ["\\", '"', "'", "\0", ]
