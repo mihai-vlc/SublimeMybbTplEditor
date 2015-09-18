@@ -55,10 +55,7 @@ class MybbTplLoadCommand(sublime_plugin.TextCommand):
 
     def create_folder(self, folder_name):
         # we build the mybb-tpl folder
-        if sublime.platform() == "windows":
-            path = os.path.expanduser("~\\My Documents\\" + folder_name)
-        else:
-            path = os.path.expanduser("~/Documents/" + folder_name)
+        path = os.path.expanduser(folder_name)
 
         if not os.path.exists(path):
             os.makedirs(path)
@@ -85,8 +82,9 @@ class MybbTplLoadCommand(sublime_plugin.TextCommand):
         self.settings.set('tpl_set', tplSets[p])
         sublime.save_settings("mybb-tpl.sublime-settings")
 
-        #grab the folder name
-        self.view.window().show_input_panel("Folder name:", "mybbTpl", self.create_folder, None, None)
+        defaultPath = self.settings.get("default_path", "/mybbTemp") + "/mybbTpl";
+        # grab the folder name
+        self.view.window().show_input_panel("Folder name:", defaultPath, self.create_folder, None, None)
 
     def run_query(self, query):
         if query is None:
@@ -166,10 +164,7 @@ class MybbCssLoadCommand(sublime_plugin.TextCommand):
 
     def create_folder(self, folder_name):
         # we build the mybb-tpl folder
-        if sublime.platform() == "windows":
-            path = os.path.expanduser("~\\My Documents\\" + folder_name)
-        else:
-            path = os.path.expanduser("~/Documents/" + folder_name)
+        path = os.path.expanduser(folder_name)
 
         if not os.path.exists(path):
             os.makedirs(path)
@@ -196,8 +191,9 @@ class MybbCssLoadCommand(sublime_plugin.TextCommand):
         self.settings.set('css_set', cssSets[p])
         sublime.save_settings("mybb-tpl.sublime-settings")
 
-        #grab the folder name
-        self.view.window().show_input_panel("Folder name:", "mybbCss", self.create_folder, None, None)
+        defaultPath = self.settings.get("default_path", "/mybbTemp") + "/mybbCss";
+        # grab the folder name
+        self.view.window().show_input_panel("Folder full path:", defaultPath, self.create_folder, None, None)
 
     def openInNewWindow(self, path):
         subprocess.Popen([sublime.executable_path(), '.'], cwd=path, shell=True)

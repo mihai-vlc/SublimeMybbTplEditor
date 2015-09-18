@@ -9,6 +9,11 @@
     "table_prefix" : "mybb_",
     "mysql_executable": "/wamp/bin/mysql/mysql5.6.12/bin/mysql.exe",
     "css_update_url" : "http://localhost/mybb/updatecss.php",
-    "tpl_set" : "1", // the id of the tpl set used when saving, you don't need to set this if you load them
-    "mybb_version" : "1615" // when new templates will be added from sublime they will use this version, the existing tpls will keep their version
+    // the id of the tpl set used when saving, you don't need to set this if you load them
+    "tpl_set" : "1",
+    // when new templates will be added from sublime they will use this version, the existing tpls will keep their version
+    "mybb_version" : "1860",
+    // the default path for creating the new directories
+    "default_path": "/mybbTemp"
+
 }
