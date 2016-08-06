@@ -12,6 +12,18 @@ Search for `Mybb Template Editor`
 Clone this project in your Packages folder under the name `Mybb Template Editor`.  
 `git clone https://github.com/ionutvmi/SublimeMybbTplEditor.git "Mybb Template Editor"`
 
+**Setup**
+(Video Tutorial)(https://www.youtube.com/watch?v=HlUxKx8A-Xk)
+
+1. Go to Admin CP -> Themes & Styles -> Templates -> Configure a new template
+3. Go to Admin CP -> Themes & Styles -> Themes -> Configure a new template (make sure it has the proper template set defined)
+3. Mark it as your default theme
+4. Go to subline and install the mybb plugin
+5. Go to Sublime -> Package Settings -> Mybb Plugin -> Settings user and configure the mysql credentials.
+5. Access the package control (Ctrl+Shift+P) and search for mybb load template
+6. Select your template, define a folder path and a new window will pop up
+7. Edit your files and save them.
+
 How to use
 -----------------
 Go to Preferences > Package Settings > MybbTpl and edit the settings to fit your system.  
